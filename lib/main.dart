@@ -7,7 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const SelectionContainerDisabledExampleApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -21,29 +21,64 @@ class MyApp extends StatelessWidget {
     // Pass parameters to the platform side.
     const Map<String, dynamic> creationParams = <String, dynamic>{};
 
-    return PlatformViewLink(
-      viewType: viewType,
-      surfaceFactory: (context, controller) {
-        return AndroidViewSurface(
-          controller: controller as AndroidViewController,
-          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-      },
-      onCreatePlatformView: (params) {
-        return PlatformViewsService.initSurfaceAndroidView(
-          id: params.id,
-          viewType: viewType,
-          layoutDirection: TextDirection.ltr,
-          creationParams: creationParams,
-          creationParamsCodec: const StandardMessageCodec(),
-          onFocus: () {
-            params.onFocusChanged(true);
-          },
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          width: 360,
+          height: 520,
+          child: PlatformViewLink(
+            viewType: viewType,
+            surfaceFactory: (context, controller) {
+              return AndroidViewSurface(
+                controller: controller as AndroidViewController,
+                gestureRecognizers: const <Factory<
+                    OneSequenceGestureRecognizer>>{},
+                hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+              );
+            },
+            onCreatePlatformView: (params) {
+              return PlatformViewsService.initSurfaceAndroidView(
+                id: params.id,
+                viewType: viewType,
+                layoutDirection: TextDirection.ltr,
+                creationParams: creationParams,
+                creationParamsCodec: const StandardMessageCodec(),
+                onFocus: () {
+                  params.onFocusChanged(true);
+                },
+              )
+                ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+                ..create();
+            },
+          ),
         )
-          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-          ..create();
-      },
+      ],
+    );
+  }
+}
+
+class SelectionContainerDisabledExampleApp extends StatelessWidget {
+  const SelectionContainerDisabledExampleApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(title: const Text('React native with flutter POC')),
+        body: const Center(
+          child: SelectionArea(
+            child: Column(
+              children: <Widget>[
+                Text('This is Flutter View'),
+                Text('This is another Flutter View'),
+                MyApp()
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

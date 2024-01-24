@@ -52,6 +52,21 @@ android {
     }
 }
 
+task wrapper(type: Wrapper){
+    gradleVersion = '8.2'
+}
+
+task prepareKotlinBuildScriptModel {
+
+}
+
+dependencies {
+    implementation("com.facebook.react:react-android:0.73.0")
+    implementation("com.facebook.react:hermes-android:0.73.0")
+    implementation("com.facebook.react:flipper-integration:0.73.0")
+    implementation files('libs/AndroidSdk-release.aar')
+}
+
 flutter {
     source '../..'
 }
